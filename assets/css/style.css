@@ -289,6 +289,21 @@ td.state { min-width: 170px; }
 .footer-bottom { border-top: 1px solid #2A2627; padding-top: var(--space-md); font-size: 0.82rem; color: var(--color-gray-400); }
 
 /* ---- Tutoriel ---- */
+.tuto-simple { max-width: 820px; padding-bottom: var(--space-2xl); }
+.sommaire { list-style: none; margin: var(--space-lg) 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.6rem; counter-reset: som; }
+.sommaire li { counter-increment: som; }
+.sommaire a { display: inline-flex; align-items: center; gap: 0.6rem; text-decoration: none; font-weight: 500; font-size: 0.95rem;
+  background: var(--color-white); border: 1px solid var(--color-gray-200); border-radius: 999px; padding: 0.45rem 1rem 0.45rem 0.5rem;
+  transition: border-color var(--transition-base); }
+.sommaire a::before { content: counter(som); display: inline-grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 50%;
+  background: var(--color-black); color: var(--color-white); font-family: var(--font-heading); font-weight: 700; font-size: 0.8rem; }
+.sommaire a:hover { border-color: var(--color-black); }
+.resultats { list-style: none; padding: 0 !important; display: grid; gap: 0.6rem; }
+.resultats li { background: var(--color-white); border: 1px solid var(--color-gray-200); border-left: 4px solid var(--color-black);
+  border-radius: var(--radius-sm); padding: 0.75rem 1rem; max-width: none; }
+.tuto-section > details.more { margin-top: var(--space-sm); }
+.tuto-section > details.more p { color: var(--color-gray-600); max-width: 68ch; }
+.tuto-section li { font-size: 1.02rem; }
 .tuto-layout { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: var(--space-xl); align-items: start; padding-bottom: var(--space-2xl); }
 .toc { position: sticky; top: 104px; font-size: 0.92rem; }
 .toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.15rem; counter-reset: toc; }

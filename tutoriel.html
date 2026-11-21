@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Tutoriel — Mise en ligne YouTube du festival — VIKTO LABS</title>
-<meta name="description" content="Tutoriel pas à pas : créer l'accès Google, tester avec 53 vidéos factices, lire le résultat, puis mettre en ligne les vrais films.">
+<title>Tutoriel — Mise en ligne YouTube du festival</title>
+<meta name="description" content="Tutoriel en 5 étapes : créer l'accès Google, tester avec 53 vidéos factices, lire le résultat.">
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/svg+xml" href="assets/images/icone.svg">
 <link rel="stylesheet" href="assets/css/fonts.css">
@@ -33,285 +33,149 @@
 <main id="contenu">
   <div class="container">
     <section class="hero">
-      <span class="eyebrow">Tutoriel pas à pas</span>
-      <h1>De l'essai à blanc <span class="accent">aux vrais films.</span></h1>
-      <p class="lead">Ce tutoriel suit l'ordre dans lequel faire les choses : s'exercer sans risque, créer l'accès Google, tester avec 53 vidéos factices pour connaître vos limites, puis mettre en ligne les films du festival.</p>
-      <div class="actions">
-        <a href="index.html?demo=1" class="btn btn-dark btn-arrow">Essayer tout de suite en démonstration</a>
-        <a href="#kit" class="btn btn-outline">Télécharger le kit de test</a>
-      </div>
+      <span class="eyebrow">Tutoriel</span>
+      <h1>Le test en <span class="accent">5 étapes.</span></h1>
+      <p class="lead">Comptez une demi-heure la première fois. Faites-le sur un ordinateur, avec Chrome ou Edge.</p>
+      <ol class="sommaire">
+        <li><a href="#acces">Créer l'identifiant Google</a></li>
+        <li><a href="#chaine">Créer une chaîne de test</a></li>
+        <li><a href="#kit">Télécharger le kit</a></li>
+        <li><a href="#test">Lancer le test</a></li>
+        <li><a href="#resultats">Lire le résultat</a></li>
+      </ol>
+      <p class="hint" style="margin-top: var(--space-md)">Envie de voir l'outil avant ? <a href="index.html?demo=1">Ouvrez la démonstration</a> : elle fonctionne sans compte et n'envoie rien à YouTube.</p>
     </section>
 
-    <div class="tuto-layout">
-      <nav class="toc" aria-label="Sommaire">
-        <ol>
-          <li><a href="#apercu">Vue d'ensemble</a></li>
-          <li><a href="#demonstration">S'exercer en démonstration</a></li>
-          <li><a href="#acces">Créer l'accès Google</a></li>
-          <li><a href="#chaine">Préparer une chaîne de test</a></li>
-          <li><a href="#kit">Le kit de test</a></li>
-          <li><a href="#test">Faire le test des 53 vidéos</a></li>
-          <li><a href="#resultats">Lire le résultat</a></li>
-          <li><a href="#nettoyage">Nettoyer après le test</a></li>
-          <li><a href="#films">Mettre en ligne les vrais films</a></li>
-          <li><a href="#depannage">Dépannage</a></li>
+    <div class="tuto tuto-simple">
+
+      <section class="tuto-section" id="acces">
+        <span class="eyebrow">Étape 1 · une seule fois, 20 minutes</span>
+        <h2>Créer l'identifiant Google</h2>
+        <p>Sans lui, aucune page n'a le droit d'agir sur votre chaîne. Il est gratuit.</p>
+        <ol class="numbered">
+          <li>Ouvrez <code>console.cloud.google.com</code> et créez un projet, par exemple « Festival ».</li>
+          <li>Menu <strong>API et services</strong> › <strong>Bibliothèque</strong> : cherchez <strong>YouTube Data API v3</strong> et cliquez sur <strong>Activer</strong>.</li>
+          <li>Menu <strong>Écran de consentement OAuth</strong> : choisissez <strong>Externe</strong>, donnez un nom, laissez sur <strong>Test</strong>, et ajoutez votre adresse Google dans <strong>Utilisateurs tests</strong>.</li>
+          <li>Menu <strong>Identifiants</strong> › <strong>Créer des identifiants</strong> › <strong>ID client OAuth</strong> : choisissez <strong>Application Web</strong>.</li>
+          <li>Dans <strong>Origines JavaScript autorisées</strong>, collez exactement : <code id="origine">https://viktor-guignard.github.io</code></li>
+          <li>Validez et copiez l'<strong>ID client</strong>. Il se termine par <code>.apps.googleusercontent.com</code>.</li>
         </ol>
-      </nav>
+        <div class="callout is-red">
+          <p><strong>Attention : il faut un « ID client OAuth », pas une « clé API ».</strong> Une clé API commence par <code>AIza</code> et ne permet pas d'envoyer de vidéo.</p>
+        </div>
+        <p class="muted">Google renomme parfois ces menus. Si un intitulé a changé, prenez le plus proche.</p>
+      </section>
 
-      <div class="tuto">
+      <section class="tuto-section" id="chaine">
+        <span class="eyebrow">Étape 2 · 5 minutes</span>
+        <h2>Créer une chaîne de test</h2>
+        <p>Le test envoie 53 fausses vidéos. Faites-le sur une chaîne à part, jamais sur celle du festival.</p>
+        <ol class="numbered">
+          <li>Sur YouTube, cliquez sur votre photo de profil, puis <strong>Changer de compte</strong> › <strong>Afficher toutes les chaînes</strong> › <strong>Créer une chaîne</strong>.</li>
+          <li>Nommez-la, par exemple « Essais festival ».</li>
+        </ol>
+      </section>
 
-        <section class="tuto-section" id="apercu">
-          <span class="eyebrow">01</span>
-          <h2>Vue d'ensemble</h2>
-          <p>L'outil est une simple page web. Vous lui donnez deux choses qui sont sur votre ordinateur : le tableau des films (Excel) et le dossier des vidéos. Il relie chaque vidéo à sa ligne du tableau, vous montre le résultat, puis envoie les vidéos sur votre chaîne YouTube avec le bon titre et la bonne description.</p>
-          <ul>
-            <li><strong>Vos fichiers ne passent par aucun serveur intermédiaire.</strong> Ils vont directement de votre navigateur à YouTube.</li>
-            <li><strong>Les vidéos arrivent en privé.</strong> Vous les regardez, puis vous les rendez publiques d'un clic.</li>
-            <li><strong>Rien n'est envoyé deux fois.</strong> Après une coupure ou un blocage, l'envoi reprend où il s'était arrêté.</li>
-          </ul>
-          <div class="callout">
-            <h3>Ce qu'il vous faut</h3>
-            <p>Un ordinateur avec Chrome ou Edge, le compte Google de la chaîne, et un « identifiant client » Google à créer une seule fois (chapitre 03). Pour simplement découvrir l'outil, rien de tout cela n'est nécessaire : passez au chapitre 02.</p>
+      <section class="tuto-section" id="kit">
+        <span class="eyebrow">Étape 3 · 1 minute</span>
+        <h2>Télécharger le kit</h2>
+        <div class="kit-card">
+          <div>
+            <h3>53 fausses vidéos et leur tableau</h3>
+            <p>Un fichier zip de 1,1 Mo. Chaque vidéo dure 10 secondes. Tout y est inventé.</p>
           </div>
-        </section>
+          <a href="kit-test/kit-test-53-videos.zip" class="btn btn-primary" download>Télécharger le kit</a>
+        </div>
+        <p>Décompressez le zip. Vous obtenez un fichier <code>films-test.xlsx</code> et un dossier <code>YOUTUBE</code>.</p>
+      </section>
 
-        <section class="tuto-section" id="demonstration">
-          <span class="eyebrow">02</span>
-          <h2>S'exercer en démonstration</h2>
-          <p>Le mode démonstration remplace YouTube par un faux, qui vit dans la page. Rien ne sort de votre ordinateur et aucun compte n'est nécessaire. C'est le bon moyen de comprendre l'outil en deux minutes.</p>
-          <ol class="numbered">
-            <li>Ouvrez <a href="index.html?demo=1">l'outil en démonstration</a>, ou cliquez sur <strong>Essayer en démonstration</strong> à l'étape 01 de l'outil. Un bandeau noir apparaît en haut de la page.</li>
-            <li>À l'étape 02, cliquez sur <strong>Charger les 53 vidéos d'exemple</strong>. Le tableau et 53 fausses vidéos se chargent d'un coup.</li>
-            <li>Dans le bandeau noir, choisissez ce que vous voulez voir : <em>aucune limite</em>, <em>quota épuisé après 50 vidéos</em>, <em>limite de la chaîne</em>, ou <em>vidéos bloquées en privé</em>.</li>
-            <li>Cliquez sur <strong>Mettre en ligne</strong> et observez le bilan.</li>
-          </ol>
-          <figure>
-            <img src="assets/tuto/02-demonstration.png" alt="Bandeau noir du mode démonstration, avec le choix de la limite à simuler" loading="lazy" width="2240" height="196">
-            <figcaption>Le bandeau du mode démonstration. Tant qu'il est affiché, rien n'est envoyé à YouTube.</figcaption>
-          </figure>
-          <div class="callout is-warn">
-            <p><strong>La démonstration ne mesure rien.</strong> Les limites qu'elle affiche sont celles que vous choisissez dans le bandeau. Pour connaître vos vraies limites, il faut le test réel des chapitres 05 à 07.</p>
-          </div>
-        </section>
+      <section class="tuto-section" id="test">
+        <span class="eyebrow">Étape 4 · quelques minutes</span>
+        <h2>Lancer le test</h2>
+        <ol class="numbered">
+          <li>Ouvrez <a href="index.html">l'outil</a>. Collez l'ID client, cliquez sur <strong>Se connecter à YouTube</strong> et choisissez la <strong>chaîne de test</strong>.</li>
+          <li>Cliquez sur <strong>Choisir le tableau…</strong> et prenez <code>films-test.xlsx</code>.</li>
+          <li>Cliquez sur <strong>Choisir un dossier…</strong> et prenez le dossier <code>YOUTUBE</code>.</li>
+          <li>Dans l'encadré noir, en haut de la page, cochez la case « chaîne de test ».</li>
+          <li>Cliquez sur <strong>Mettre en ligne 53 vidéos</strong> et laissez l'onglet ouvert.</li>
+        </ol>
+        <figure>
+          <img src="assets/tuto/11-encadre-test.png" alt="L'encadré noir de l'outil, avec ses six étapes qui se cochent toutes seules" loading="lazy" width="2144" height="1370">
+          <figcaption>L'encadré noir suit le test : vert quand c'est fait, rouge s'il y a un blocage.</figcaption>
+        </figure>
+        <details class="more">
+          <summary>Google affiche un avertissement à la connexion</summary>
+          <p>C'est normal. Sur l'écran « Google n'a pas validé cette application », cliquez sur <strong>Paramètres avancés</strong>, puis sur <strong>Accéder à…</strong>, et acceptez les autorisations demandées.</p>
+        </details>
+      </section>
 
-        <section class="tuto-section" id="acces">
-          <span class="eyebrow">03</span>
-          <h2>Créer l'accès Google</h2>
-          <p>Aucune page n'a le droit d'agir sur une chaîne YouTube sans un « identifiant client OAuth », créé gratuitement dans la console Google Cloud. C'est à faire une seule fois et cela prend une vingtaine de minutes.</p>
-          <div class="callout is-red">
-            <h3>Un identifiant client, pas une clé API</h3>
-            <p>Google propose aussi des « clés API », qui commencent par <code>AIza</code>. Elles servent à lire des informations publiques et ne permettent pas d'envoyer une vidéo. Ce qu'il vous faut se termine par <code>.apps.googleusercontent.com</code>. L'outil refuse une clé API et vous l'explique.</p>
-          </div>
-          <p class="muted">Google renomme régulièrement les menus de sa console. Si un intitulé ci-dessous a changé, cherchez le plus proche.</p>
-          <ol class="numbered">
-            <li>Allez sur <code>console.cloud.google.com</code> avec le compte Google de la chaîne, et créez un projet (par exemple « Festival »).</li>
-            <li>Menu <strong>API et services</strong>, puis <strong>Bibliothèque</strong> : cherchez <strong>YouTube Data API v3</strong> et cliquez sur <strong>Activer</strong>.</li>
-            <li>Menu <strong>Écran de consentement OAuth</strong> (ou « Google Auth Platform ») :
-              <ul>
-                <li>type d'utilisateurs : <strong>Externe</strong> ;</li>
-                <li>nom de l'application et adresses e-mail : les vôtres ;</li>
-                <li>état de publication : laissez sur <strong>Test</strong> ;</li>
-                <li>dans <strong>Utilisateurs tests</strong>, ajoutez l'adresse de chaque compte Google qui utilisera l'outil (celui de la chaîne de test et celui de la chaîne du festival).</li>
-              </ul>
-            </li>
-            <li>Menu <strong>Identifiants</strong> (ou « Clients »), puis <strong>Créer des identifiants</strong> et <strong>ID client OAuth</strong> :
-              <ul>
-                <li>type d'application : <strong>Application Web</strong> ;</li>
-                <li>dans <strong>Origines JavaScript autorisées</strong>, ajoutez l'adresse du site, sans rien après le nom de domaine et sans barre oblique finale. Pour cette page : <code id="origine">https://viktor-guignard.github.io</code></li>
-              </ul>
-            </li>
-            <li>Validez, puis copiez l'<strong>ID client</strong>. Vous n'avez pas besoin du « code secret » affiché à côté.</li>
-            <li>Dans l'outil, collez l'ID client à l'étape 01 et cliquez sur <strong>Se connecter à YouTube</strong>.</li>
-          </ol>
-          <figure>
-            <img src="assets/tuto/01-connexion.png" alt="Étape 01 de l'outil : le champ de l'identifiant client et le bouton de connexion" loading="lazy" width="2144" height="862">
-            <figcaption>L'identifiant client est retenu dans le navigateur : vous ne le collez qu'une fois.</figcaption>
-          </figure>
-          <h3>Au moment de la connexion</h3>
-          <ul>
-            <li>Google affiche « Google n'a pas validé cette application ». C'est normal pour un accès en mode Test : cliquez sur <strong>Paramètres avancés</strong>, puis sur <strong>Accéder à…</strong></li>
-            <li>Acceptez les deux autorisations demandées (gérer vos vidéos YouTube). Sans elles, l'envoi sera refusé.</li>
-            <li>Si le compte gère plusieurs chaînes, Google vous demande laquelle utiliser : choisissez bien la chaîne voulue. Son nom s'affiche ensuite à l'étape 01.</li>
-          </ul>
-        </section>
+      <section class="tuto-section" id="resultats">
+        <span class="eyebrow">Étape 5</span>
+        <h2>Lire le résultat</h2>
+        <p>À la fin, un <strong>bilan</strong> s'affiche sous le bouton.</p>
+        <figure>
+          <img src="assets/tuto/07-bilan-blocage.png" alt="Bilan : 50 vidéos sur 53 mises en ligne, blocage à la vidéo 051" loading="lazy" width="1980" height="726">
+          <figcaption>Exemple de bilan avec un blocage à la 51<sup>e</sup> vidéo.</figcaption>
+        </figure>
+        <ul class="resultats">
+          <li><strong>« Tout est passé »</strong> : aucune limite en dessous de 53 vidéos par jour.</li>
+          <li><strong>« Quota épuisé »</strong> : votre identifiant Google s'arrête à ce nombre de vidéos par jour. Recliquez le lendemain après 9 h : le reste partira, sans doublon.</li>
+          <li><strong>« Limite de la chaîne »</strong> : c'est YouTube qui plafonne cette chaîne. Réessayez 24 heures plus tard.</li>
+        </ul>
+        <h3>Puis trois gestes pour finir</h3>
+        <ol class="numbered">
+          <li><strong>Testez la publication.</strong> En bas de l'outil, cochez une seule vidéo et cliquez sur <strong>Passer en public</strong>. Si elle reste privée, l'outil vous le dit : c'est un point important à signaler.</li>
+          <li><strong>Enregistrez le rapport.</strong> Dans l'encadré noir, cliquez sur <strong>Enregistrer le rapport de test</strong>. C'est le fichier à transmettre pour faire analyser le test.</li>
+          <li><strong>Supprimez les vidéos d'essai.</strong> En bas de l'outil, cochez la case tout en haut de la liste, puis cliquez sur <strong>Supprimer de YouTube</strong>.</li>
+        </ol>
+      </section>
 
-        <section class="tuto-section" id="chaine">
-          <span class="eyebrow">04</span>
-          <h2>Préparer une chaîne de test</h2>
-          <p>Le test envoie 53 vidéos factices. Faites-le sur une chaîne à part, pour ne rien risquer sur celle du festival.</p>
-          <ol class="numbered">
-            <li>Sur YouTube, connecté à votre compte, ouvrez le menu de votre photo de profil, puis <strong>Changer de compte</strong> et <strong>Afficher toutes les chaînes</strong>. Cliquez sur <strong>Créer une chaîne</strong> et nommez-la, par exemple « Essais festival ».</li>
-            <li>Vérifiez que l'adresse du compte Google de cette chaîne figure bien dans les <strong>Utilisateurs tests</strong> du chapitre 03.</li>
-            <li>Dans l'outil, cliquez sur <strong>Se connecter à YouTube</strong> et choisissez cette chaîne de test. Vérifiez son nom à l'étape 01 avant d'aller plus loin.</li>
-          </ol>
-          <div class="callout">
-            <h3>Ce que le test sur une chaîne à part mesure, et ce qu'il ne mesure pas</h3>
-            <p><strong>Il mesure</strong> le quota de votre accès Google, qui est le même quelle que soit la chaîne, et il vérifie que tout l'outil fonctionne en réel.</p>
-            <p><strong>Il ne mesure pas</strong> la limite quotidienne propre à la chaîne du festival : YouTube en fixe une par chaîne, selon son ancienneté, sans publier le chiffre. Une chaîne toute neuve a souvent une limite plus basse qu'une chaîne ancienne.</p>
-          </div>
-        </section>
+      <section class="tuto-section" id="films">
+        <span class="eyebrow">Ensuite</span>
+        <h2>Pour les vrais films</h2>
+        <p>Même chose, avec vos fichiers :</p>
+        <ol class="numbered">
+          <li>Connectez-vous à la <strong>chaîne du festival</strong>.</li>
+          <li>Choisissez votre tableau, puis le dossier <code>YOUTUBE</code> créé par le programme de téléchargement.</li>
+          <li>Relisez l'aperçu : chaque vidéo est en face de son titre et de sa description.</li>
+          <li>Envoyez d'abord 2 ou 3 vidéos, regardez-les sur YouTube, puis envoyez le reste.</li>
+          <li>Passez-les en public quand vous les avez vérifiées.</li>
+        </ol>
+        <div class="callout">
+          <p><strong>Trois règles :</strong> ne triez pas et ne supprimez pas de lignes dans le tableau ; utilisez toujours le même navigateur sur le même ordinateur ; laissez l'onglet ouvert pendant l'envoi.</p>
+        </div>
+      </section>
 
-        <section class="tuto-section" id="kit">
-          <span class="eyebrow">05</span>
-          <h2>Le kit de test</h2>
-          <div class="kit-card">
-            <div>
-              <h3>53 vidéos factices et leur tableau</h3>
-              <p>Un fichier zip de 1,1 Mo. Tout y est fictif : titres, réalisateurs, adresses et liens. Chaque vidéo dure 10 secondes et affiche son numéro.</p>
-            </div>
-            <a href="kit-test/kit-test-53-videos.zip" class="btn btn-primary" download>Télécharger le kit</a>
-          </div>
-          <ul>
-            <li><code>films-test.xlsx</code> : le tableau, 53 lignes. Les titres commencent par « ESSAI 001 », « ESSAI 002 »… pour être reconnaissables sur la chaîne.</li>
-            <li><code>YOUTUBE</code> : 53 sous-dossiers numérotés, avec une vidéo dans chacun, rangés exactement comme le fait le programme de téléchargement.</li>
-          </ul>
-          <p><strong>Pourquoi 53 et pas 50 ?</strong> Pour voir ce qui se passe juste après un éventuel seuil à 50 : si un blocage tombe à la 51<sup>e</sup>, vous le verrez, et vous verrez aussi comment les trois dernières passent ensuite.</p>
-          <p><strong>Pourquoi les vidéos sont-elles toutes différentes ?</strong> YouTube refuse les doublons sur une même chaîne. Avec 53 vidéos identiques, les refus auraient faussé le test. Chaque vidéo a donc sa couleur et son numéro à l'écran.</p>
-        </section>
+      <section class="tuto-section" id="depannage">
+        <span class="eyebrow">Un problème ?</span>
+        <h2>Les pannes les plus courantes</h2>
+        <details class="more">
+          <summary>Google affiche « origin_mismatch » ou « redirect_uri_mismatch »</summary>
+          <p>L'adresse du site n'est pas dans les « Origines JavaScript autorisées ». Reprenez le point 5 de l'étape 1, sans barre oblique à la fin, et attendez quelques minutes.</p>
+        </details>
+        <details class="more">
+          <summary>Google affiche « Accès bloqué » ou « access_denied »</summary>
+          <p>Votre adresse Google n'est pas dans les « Utilisateurs tests ». Ajoutez-la (point 3 de l'étape 1).</p>
+        </details>
+        <details class="more">
+          <summary>La fenêtre de connexion Google ne s'ouvre pas</summary>
+          <p>Le navigateur bloque les fenêtres surgissantes. Autorisez-les pour ce site, grâce à l'icône dans la barre d'adresse, puis recliquez.</p>
+        </details>
+        <details class="more">
+          <summary>L'outil dit que l'identifiant n'a pas la bonne forme</summary>
+          <p>Vous avez probablement collé une clé API ou le code secret. Il faut l'<strong>ID client</strong>, qui se termine par <code>.apps.googleusercontent.com</code>.</p>
+        </details>
+        <details class="more">
+          <summary>Le bouton « Mettre en ligne » reste gris</summary>
+          <p>Vérifiez trois choses : vous êtes connecté, des vidéos sont cochées dans l'aperçu, et la case « chaîne de test » de l'encadré noir est cochée.</p>
+        </details>
+        <details class="more">
+          <summary>Une vidéo indique « Aucune ligne du tableau ne correspond »</summary>
+          <p>Son nom ne commence pas par un numéro de ligne. Renommez le fichier sur le modèle « 007 - Titre », ou vérifiez que le bon tableau est chargé.</p>
+        </details>
+        <p>Autre chose ? Enregistrez le rapport de test : il contient la réponse exacte de YouTube.</p>
+      </section>
 
-        <section class="tuto-section" id="test">
-          <span class="eyebrow">06</span>
-          <h2>Faire le test des 53 vidéos</h2>
-          <ol class="numbered">
-            <li>Décompressez le kit sur votre ordinateur.</li>
-            <li>Ouvrez <a href="index.html">l'outil</a> et connectez-vous à la <strong>chaîne de test</strong>.</li>
-            <li><strong>Étape 02 :</strong> cliquez sur <strong>Choisir le tableau…</strong> et prenez <code>films-test.xlsx</code>. L'outil reconnaît seul les colonnes du titre, de la description et des mots-clés.</li>
-            <li><strong>Étape 03 :</strong> cliquez sur <strong>Choisir un dossier…</strong> et prenez le dossier <code>YOUTUBE</code> du kit. Le navigateur demande de confirmer l'envoi de 53 fichiers à la page : acceptez.</li>
-            <li><strong>Étape 04 :</strong> laissez la visibilité sur <strong>Privée</strong>.</li>
-            <li><strong>Encadré noir « Test des 53 vidéos »</strong>, en haut de la page : cochez la case qui confirme que la chaîne connectée est votre chaîne de test. Tant qu'elle n'est pas cochée, l'outil refuse d'envoyer le kit : c'est une sécurité pour ne pas envoyer 53 vidéos factices sur la chaîne du festival.</li>
-            <li><strong>Étape 05 :</strong> vérifiez que l'aperçu annonce « 53 vidéos reliées », puis cliquez sur <strong>Mettre en ligne 53 vidéos</strong>.</li>
-            <li>Laissez l'onglet ouvert jusqu'au bilan. Avec des vidéos aussi légères, comptez quelques minutes.</li>
-          </ol>
-          <figure>
-            <img src="assets/tuto/11-encadre-test.png" alt="Encadré noir du test : six étapes, dont un blocage signalé à la vidéo 051" loading="lazy" width="2144" height="1370">
-            <figcaption>L'encadré bêta suit le test tout seul : ce qui est fait est coché en vert, un blocage est signalé en rouge (capture faite en démonstration).</figcaption>
-          </figure>
-          <figure>
-            <img src="assets/tuto/03-tableau.png" alt="Étape 02 : le tableau chargé, les trois colonnes reconnues et le modèle de description" loading="lazy" width="2144" height="1738">
-            <figcaption>Étape 02. Le volet « Composer » permet d'ajouter un texte commun à toutes les descriptions.</figcaption>
-          </figure>
-          <figure>
-            <img src="assets/tuto/06-apercu.png" alt="Étape 05 : l'aperçu des 53 vidéos avec leur titre et leur description" loading="lazy" width="2144" height="1760">
-            <figcaption>Étape 05. Chaque fichier est en face du titre et de la description qu'il recevra. Rien ne part avant le clic.</figcaption>
-          </figure>
-          <div class="callout">
-            <h3>Pendant l'envoi</h3>
-            <p>Au bout d'une heure environ, Google demande de se reconnecter : un bandeau apparaît en bas de la page, un clic suffit et l'envoi continue. Le bouton <strong>Arrêter après la vidéo en cours</strong> permet de s'interrompre proprement.</p>
-          </div>
-        </section>
-
-        <section class="tuto-section" id="resultats">
-          <span class="eyebrow">07</span>
-          <h2>Lire le résultat</h2>
-          <p>À la fin de l'envoi, un <strong>bilan</strong> s'affiche sous le bouton. Il donne le nombre de vidéos passées et, en cas de blocage, la vidéo concernée, la raison en clair et la réponse exacte de YouTube.</p>
-          <figure>
-            <img src="assets/tuto/07-bilan-blocage.png" alt="Bilan : 50 vidéos sur 53 mises en ligne, blocage à la vidéo 051, quota épuisé" loading="lazy" width="1980" height="726">
-            <figcaption>Exemple de bilan avec un blocage à la 51<sup>e</sup> vidéo (capture faite en démonstration).</figcaption>
-          </figure>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>Ce que dit le bilan</th><th>Ce que cela signifie</th><th>Ce que vous faites</th></tr></thead>
-              <tbody>
-                <tr><td><strong>53 / 53</strong>, « Tout est passé »</td><td>Ni votre accès Google ni la chaîne de test n'ont de limite en dessous de 53 vidéos par jour.</td><td>Vous pourrez envoyer les films du festival en une journée, sous réserve de la limite propre à la chaîne du festival.</td></tr>
-                <tr><td><strong>Environ 6 / 53</strong>, « quota épuisé »</td><td>Votre accès Google compte encore un envoi au prix fort : une poignée de vidéos par jour.</td><td>Étalez les envois sur plusieurs jours, ou demandez une hausse de quota à Google depuis la console. Prévoyez du temps.</td></tr>
-                <tr><td><strong>50 / 53</strong> ou un autre nombre, « quota épuisé »</td><td>Le quota de l'accès Google s'arrête à ce nombre de vidéos par jour.</td><td>Relancez le lendemain après 9 h : les vidéos restantes partiront, sans doublon.</td></tr>
-                <tr><td>« limite quotidienne de la chaîne »</td><td>C'est YouTube qui plafonne cette chaîne, pas votre accès. Le chiffre dépend de la chaîne.</td><td>Réessayez 24 heures plus tard. Ce chiffre ne vaut que pour la chaîne de test.</td></tr>
-                <tr><td>Quelques échecs isolés, pas de blocage</td><td>Des vidéos ont été refusées une par une (titre, description, coupure).</td><td>Lisez la raison dans la colonne « État » ou dans le journal, corrigez, relancez.</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <p>Le quota se remet à zéro chaque jour à minuit, heure de Californie, soit vers 9 h à Paris. Le compteur « envoyées aujourd'hui par cette page » suit ce découpage.</p>
-
-          <h3>Second test indispensable : le passage en public</h3>
-          <p>YouTube peut garder en privé les vidéos envoyées par un accès que Google n'a pas encore contrôlé. Les vidéos d'essai servent aussi à le vérifier :</p>
-          <ol class="numbered">
-            <li>À l'étape 06, cochez <strong>une seule</strong> vidéo d'essai et cliquez sur <strong>Passer en public</strong>.</li>
-            <li>Si elle devient « Publique », votre accès peut publier : tout va bien. Supprimez-la ensuite avec les autres vidéos d'essai (chapitre 08).</li>
-            <li>Si l'outil répond « YouTube la garde en privé », votre accès est bridé. Il faudra demander à Google le contrôle de l'accès (« audit » de l'API YouTube), ce qui peut prendre plusieurs semaines, ou mettre les films en ligne par YouTube Studio et n'utiliser l'outil que pour préparer les textes.</li>
-          </ol>
-          <figure>
-            <img src="assets/tuto/09-publication.png" alt="Étape 06 : la liste des vidéos mises en ligne, avec les boutons Passer en public et Supprimer de YouTube" loading="lazy" width="2144" height="1890">
-            <figcaption>Étape 06. Le bouton <strong>Actualiser l'état</strong> interroge YouTube : la colonne « Traitement » signale une vidéo refusée après coup, par exemple comme doublon.</figcaption>
-          </figure>
-
-          <h3>Le rapport de test</h3>
-          <p>Dans l'encadré noir en haut de l'outil, le bouton <strong>Enregistrer le rapport de test</strong> crée un fichier texte qui réunit tout : la version de l'outil, la chaîne utilisée, chaque envoi avec son résultat, la vidéo et la raison exacte d'un blocage, le résultat du passage en public, et le journal complet. Enregistrez-le une fois le test terminé, et de nouveau le lendemain si vous relancez un envoi après un blocage.</p>
-          <p>Le fichier reste sur votre ordinateur. C'est lui qu'il faut transmettre pour faire analyser le test.</p>
-
-          <h3>Garder une trace</h3>
-          <p>L'étape 07 de l'outil contient le <strong>journal</strong> : chaque envoi, avec l'heure et la réponse exacte de YouTube en cas de refus. Enregistrez-le en fichier texte à la fin du test : c'est la pièce à joindre si vous demandez de l'aide.</p>
-          <figure>
-            <img src="assets/tuto/10-journal.png" alt="Étape 07 : le journal, avec les envois réussis et le refus de la 51e vidéo" loading="lazy" width="2144" height="1270">
-          </figure>
-        </section>
-
-        <section class="tuto-section" id="nettoyage">
-          <span class="eyebrow">08</span>
-          <h2>Nettoyer après le test</h2>
-          <ol class="numbered">
-            <li>À l'étape 06, cochez la case tout en haut de la liste pour sélectionner toutes les vidéos d'essai.</li>
-            <li>Cliquez sur <strong>Supprimer de YouTube</strong> et confirmez. Les vidéos sont supprimées de la chaîne et retirées de la liste.</li>
-            <li>Vérifiez dans YouTube Studio que la chaîne de test est vide.</li>
-          </ol>
-          <div class="callout is-warn">
-            <p><strong>La suppression est définitive</strong> et ne concerne que les vidéos cochées dans cette liste, c'est-à-dire celles que l'outil a lui-même mises en ligne depuis ce navigateur. Elle ne touche à aucune autre vidéo de la chaîne.</p>
-            <p>Chaque suppression consomme un peu de quota. Si le quota est épuisé, faites le nettoyage le lendemain.</p>
-          </div>
-        </section>
-
-        <section class="tuto-section" id="films">
-          <span class="eyebrow">09</span>
-          <h2>Mettre en ligne les vrais films</h2>
-          <p>Le déroulé est le même que pour le test, avec vos fichiers.</p>
-          <ol class="numbered">
-            <li><strong>Téléchargez les vidéos</strong> avec le programme de téléchargement SwissTransfer. Il crée un dossier <code>YOUTUBE</code> avec un sous-dossier numéroté par film.</li>
-            <li><strong>Connectez-vous à la chaîne du festival</strong> (bouton « Changer de compte » si vous étiez sur la chaîne de test). Vérifiez son nom à l'étape 01.</li>
-            <li><strong>Chargez le même tableau</strong> que celui utilisé pour le téléchargement. C'est ce qui garantit que le numéro 007 désigne le même film des deux côtés.</li>
-            <li><strong>Choisissez les colonnes</strong> du titre et de la description. Pour ajouter les crédits ou une mention commune, ouvrez le volet « Composer » et écrivez par exemple :<br><code>{Description}</code> puis, sur une nouvelle ligne, <code>Réalisation : {Réalisateur}</code>.</li>
-            <li><strong>Choisissez le dossier</strong> <code>YOUTUBE</code>, puis relisez l'aperçu ligne par ligne : c'est le moment de repérer un titre trop long ou une vidéo sans ligne.</li>
-            <li><strong>Envoyez d'abord 2 ou 3 vidéos</strong> en décochant les autres, regardez-les sur YouTube, puis envoyez le reste.</li>
-            <li><strong>Publiez</strong> à l'étape 06, une fois chaque vidéo vérifiée.</li>
-          </ol>
-          <div class="callout">
-            <h3>Les règles qui évitent les erreurs</h3>
-            <p><strong>Ne triez pas et ne supprimez pas de lignes</strong> dans le tableau une fois les téléchargements commencés : les numéros se décaleraient.</p>
-            <p><strong>Utilisez toujours le même navigateur sur le même ordinateur.</strong> La liste des vidéos déjà en ligne y est gardée ; ailleurs, l'outil ne saurait pas ce qui a déjà été envoyé. Exportez la liste en CSV pour en garder une copie.</p>
-            <p><strong>Laissez l'onglet ouvert</strong> pendant l'envoi et empêchez la mise en veille de l'ordinateur.</p>
-          </div>
-          <h3>Ce que l'outil vérifie avant l'envoi</h3>
-          <ul>
-            <li>titre vide, ou de plus de 100 caractères ;</li>
-            <li>description de plus de 5 000 caractères ;</li>
-            <li>caractères <code>&lt;</code> ou <code>&gt;</code>, que YouTube refuse ;</li>
-            <li>vidéo sans ligne correspondante, ou fichier vide.</li>
-          </ul>
-          <p>Une vidéo concernée est décochée et la raison est indiquée dans la colonne « État ».</p>
-        </section>
-
-        <section class="tuto-section" id="depannage">
-          <span class="eyebrow">10</span>
-          <h2>Dépannage</h2>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>Ce que vous voyez</th><th>Cause probable</th><th>Solution</th></tr></thead>
-              <tbody>
-                <tr><td>Google affiche « Erreur 400 : origin_mismatch » ou « redirect_uri_mismatch »</td><td>L'adresse du site n'est pas dans les origines autorisées.</td><td>Dans la console, ajoutez exactement l'adresse indiquée au chapitre 03, sans barre oblique finale. Attendez quelques minutes.</td></tr>
-                <tr><td>« Accès bloqué » ou « Erreur 403 : access_denied »</td><td>Le compte n'est pas dans les utilisateurs tests.</td><td>Ajoutez son adresse dans « Utilisateurs tests » de l'écran de consentement.</td></tr>
-                <tr><td>La fenêtre Google ne s'ouvre pas</td><td>Le navigateur bloque les fenêtres surgissantes.</td><td>Autorisez-les pour ce site (icône dans la barre d'adresse), puis recliquez.</td></tr>
-                <tr><td>« Le service de connexion Google n'est pas chargé »</td><td>Un bloqueur de publicités ou le réseau empêche le chargement.</td><td>Désactivez le bloqueur pour ce site et rechargez la page.</td></tr>
-                <tr><td>« Ce compte Google n'a pas de chaîne YouTube »</td><td>Le compte choisi n'a créé aucune chaîne.</td><td>Créez la chaîne sur YouTube, ou choisissez le bon compte.</td></tr>
-                <tr><td>« L'API YouTube Data API v3 n'est pas activée »</td><td>L'étape 2 du chapitre 03 a été sautée.</td><td>Activez l'API dans la bibliothèque de la console.</td></tr>
-                <tr><td>« L'autorisation accordée ne suffit pas »</td><td>Une case d'autorisation n'a pas été cochée à la connexion.</td><td>Cliquez sur « Changer de compte » et acceptez toutes les autorisations.</td></tr>
-                <tr><td>Une vidéo indique « Aucune ligne du tableau ne correspond »</td><td>Son nom ne commence pas par un numéro de ligne, ou le numéro dépasse le nombre de lignes.</td><td>Renommez le fichier « 007 - Titre », ou vérifiez que le bon tableau est chargé.</td></tr>
-                <tr><td>« Traitement : Refusée : doublon » après actualisation</td><td>YouTube a reconnu une vidéo déjà présente sur la chaîne.</td><td>Supprimez l'une des deux. Pour le test, utilisez bien les vidéos du kit, toutes différentes.</td></tr>
-                <tr><td>Après un changement d'ordinateur, tout apparaît « Prête »</td><td>La liste des vidéos en ligne est restée dans l'autre navigateur.</td><td>Reprenez sur l'ordinateur d'origine, ou décochez à la main les vidéos déjà en ligne.</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <p>Pour toute autre question, enregistrez le journal (étape 07 de l'outil) : il contient la réponse exacte de YouTube.</p>
-        </section>
-
-      </div>
     </div>
   </div>
 </main>
@@ -334,9 +198,9 @@
       <nav aria-label="Tutoriel">
         <h2 class="footer-title">Tutoriel</h2>
         <ul>
-          <li><a href="#acces">Créer l'accès Google</a></li>
-          <li><a href="#resultats">Lire le résultat du test</a></li>
-          <li><a href="#depannage">Dépannage</a></li>
+          <li><a href="#acces">Créer l'identifiant Google</a></li>
+          <li><a href="#test">Lancer le test</a></li>
+          <li><a href="#depannage">Un problème ?</a></li>
         </ul>
       </nav>
     </div>
