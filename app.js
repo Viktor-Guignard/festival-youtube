@@ -5,13 +5,14 @@
   const API = 'https://www.googleapis.com/youtube/v3/';
   const ENVOI = 'https://www.googleapis.com/upload/youtube/v3/videos';
   const PORTEE = 'https://www.googleapis.com/auth/youtube.upload https://www.googleapis.com/auth/youtube.force-ssl';
+  const VERSION = 'Version bêta 2 du 21 novembre 2026';
   const EXT_VIDEO = ['.mp4', '.mov', '.m4v', '.mkv', '.avi', '.webm', '.mxf', '.mpg', '.mpeg'];
   // Taille d'un morceau envoyé : doit être un multiple de 256 Ko.
   const REGLAGES = window.FYP_REGLAGES = Object.assign({ morceau: 16 * 1024 * 1024, attente: 2000 }, window.FYP_REGLAGES);
 
   const E = {
     jeton: null, expire: 0, chaine: null, demo: null,
-    entetes: [], films: [], fichiers: [], elements: [],
+    entetes: [], films: [], fichiers: [], elements: [], kit: false,
     enCours: false, arretDemande: false, modeleModifie: { titre: false, desc: false },
   };
   const chemins = new WeakMap();   // chemin d'origine des fichiers glissés-déposés
@@ -28,6 +29,8 @@
   const ecrireFaits = (f) => memoire.ecrire(prefixe() + 'faits', f);
   const sessions = () => memoire.lire(prefixe() + 'sessions', {});
   const ecrireSessions = (s) => memoire.ecrire(prefixe() + 'sessions', s);
+  const lireTest = () => memoire.lire(prefixe() + 'test', {});
+  const ecrireTest = (t) => memoire.ecrire(prefixe() + 'test', t);
   const preferences = () => memoire.lire('fyp_preferences', {});
   function retenir(valeurs) { memoire.ecrire('fyp_preferences', Object.assign(preferences(), valeurs)); }
 
@@ -216,6 +219,7 @@
     const rep = await api('GET', 'channels', { part: 'snippet', mine: 'true' });
     if (!rep.items || !rep.items.length) throw erreurApi(403, { error: { errors: [{ reason: 'youtubeSignupRequired' }] } });
     E.chaine = rep.items[0];
+    $('confirme-test').checked = false;   // nouvelle connexion : la confirmation est à refaire
     etat('etat-connexion', 'connecté à « ' + E.chaine.snippet.title + ' »', 'ok');
     $('btn-connexion').textContent = 'Changer de compte';
     journal('Connecté à la chaîne « ' + E.chaine.snippet.title + ' ».', 'ok');
@@ -432,6 +436,9 @@
   }
 
   // ------------------------------------------------------------------- aperçu
+  const ESSAI = /^ESSAI \d+/;
+  // Avec le kit de test, l'envoi attend que la chaîne de test soit confirmée dans l'encadré bêta.
+  const attenteConfirmation = () => E.kit && !E.demo && !$('confirme-test').checked;
   function construire() {
     if (E.enCours) return;
     const dejaFaits = faits();
@@ -449,6 +456,7 @@
       return { fichier, cle: cleFichier(fichier), film: film || null, num: film ? film.num : num };
     }).sort((a, b) => (a.num ?? 1e9) - (b.num ?? 1e9) || a.fichier.name.localeCompare(b.fichier.name, 'fr', { numeric: true }));
 
+    E.kit = E.films.length > 0 && E.films.filter((f) => ESSAI.test(f.valeurs[colTitre] || '')).length >= E.films.length * 0.8;
     const compte = {}, rang = {};
     E.elements.forEach((el) => { if (el.film) compte[el.film.num] = (compte[el.film.num] || 0) + 1; });
     E.elements.forEach((el) => {
@@ -521,11 +529,15 @@
     const coches = E.elements.filter((el) => el.case && el.case.checked && !el.case.disabled);
     const total = coches.reduce((s, el) => s + el.fichier.size, 0);
     $('btn-envoyer').textContent = coches.length ? 'Mettre en ligne ' + pluriel(coches.length, 'vidéo') + ' (' + taille(total) + ')' : 'Mettre en ligne';
-    $('btn-envoyer').disabled = E.enCours || !coches.length || !E.chaine;
+    $('btn-envoyer').disabled = E.enCours || !coches.length || !E.chaine || attenteConfirmation();
     const cochables = E.elements.filter((el) => el.case && !el.case.disabled);
     $('tout-cocher').checked = cochables.length > 0 && cochables.every((el) => el.case.checked);
     $('tout-cocher').disabled = E.enCours || !cochables.length;
-    if (!E.enCours) $('progression').textContent = coches.length && !E.chaine ? 'Connectez-vous à YouTube (étape 01) pour activer le bouton.' : '';
+    if (!E.enCours) {
+      $('progression').textContent = !coches.length ? '' : (!E.chaine ? 'Connectez-vous à YouTube (étape 01) pour activer le bouton.'
+        : (attenteConfirmation() ? 'Kit de test reconnu : confirmez d\'abord, dans l\'encadré noir en haut de page, que la chaîne connectée est votre chaîne de test.' : ''));
+    }
+    majTest();
 
     const lignes = Array.from(document.querySelectorAll('#lignes-publication input'));
     const choisies = lignes.filter((c) => c.checked);
@@ -674,6 +686,7 @@
     const debut = Date.now();
     const bilan = { demandees: file.length, reussies: 0, echecs: [], arret: null, playlistRatees: 0 };
     let octetsFinis = 0;
+    journal(VERSION + (E.demo ? ' (démonstration)' : '') + '.');
     journal('— Début : ' + pluriel(file.length, 'vidéo') + ' à mettre en ligne (' + taille(totalOctets) + '), visibilité ' + VISIBILITE[reglages.visibilite].toLowerCase() + '. Déjà envoyées aujourd\'hui par cette page : ' + envoyeesAujourdhui() + '.');
 
     for (let i = 0; i < file.length; i++) {
@@ -775,6 +788,14 @@
     if (b.restantes > 0) zone.append(creer('p', { textContent: 'Les vidéos restantes sont toujours cochées : cliquez à nouveau sur « Mettre en ligne » pour continuer. Aucune vidéo déjà en ligne ne sera renvoyée.' }));
     if (b.playlistRatees) zone.append(creer('p', { className: 'is-warn-text', textContent: pluriel(b.playlistRatees, 'vidéo') + ' en ligne mais non ajoutée' + (b.playlistRatees > 1 ? 's' : '') + ' à la playlist.' }));
     zone.hidden = false;
+    if (E.kit) {
+      const t = lireTest();
+      t.envois = (t.envois || []).concat([{ date: Date.now(), demandees: b.demandees, reussies: b.reussies, echecs: b.echecs.length,
+        arret: b.arret ? { num: b.arret.num, rang: b.arret.rang, statut: b.arret.erreur.statut || 0, raison: b.arret.erreur.raison || '',
+                           detail: b.arret.erreur.detail || '', message: b.arret.erreur.message } : null,
+        arreteParVous: !!b.arreteParVous, duree: b.duree, aujourdhui }]);
+      ecrireTest(t);
+    }
     message('msg-envoi', pluriel(b.reussies, 'vidéo') + ' mise' + (b.reussies > 1 ? 's' : '') + ' en ligne sur ' + b.demandees + '.' + (b.arret ? ' Arrêt : ' + b.arret.erreur.message : ''), genre);
     journal('— Fin : ' + b.reussies + ' sur ' + b.demandees + ' en ligne en ' + duree(b.duree) + (b.arret ? '. Blocage : ' + (b.arret.erreur.raison || b.arret.erreur.message) : '') + '. Envoyées aujourd\'hui par cette page : ' + aujourdhui + '.', b.arret ? 'err' : 'ok');
   }
@@ -877,6 +898,11 @@
       }
     } catch (e) { arret = e.message; journal('Publication interrompue : ' + e.message + brut(e), 'err'); }
     ecrireFaits(f);
+    if ((publiees || restees) && cles.some((c) => f[c] && ESSAI.test(f[c].titre))) {
+      const t = lireTest();
+      t.publication = { date: Date.now(), publiees, restees, resultat: restees ? 'prive' : 'ok' };
+      ecrireTest(t);
+    }
     afficherPublication();
     message('msg-publication',
       pluriel(publiees, 'vidéo') + ' rendue' + (publiees > 1 ? 's' : '') + ' publique' + (publiees > 1 ? 's' : '') + '.'
@@ -913,6 +939,92 @@
     construire();
     message('msg-publication', pluriel(supprimees, 'vidéo') + ' supprimée' + (supprimees > 1 ? 's' : '') + '.' + (echecs ? ' ' + pluriel(echecs, 'échec') + '.' : '') + (arret ? ' Arrêt : ' + arret : ''),
       echecs || arret ? 'error' : 'ok');
+  }
+
+  // ------------------------------------------------- encadré bêta : test des 53
+  const essaisEnLigne = () => Object.values(faits()).filter((v) => ESSAI.test(v.titre) && v.visibilite !== 'introuvable');
+
+  function etapesTest() {
+    const t = lireTest();
+    const relies = E.elements.filter((el) => el.film).length;
+    const enLigne = essaisEnLigne();
+    const envois = t.envois || [];
+    const dernier = envois[envois.length - 1];
+    const etapes = [];
+
+    etapes.push(E.kit && relies >= 53
+      ? { titre: 'Kit chargé', detail: E.films.length + ' lignes dans le tableau, ' + relies + ' vidéos reliées.', etat: 'done' }
+      : { titre: 'Charger le kit', detail: E.kit ? 'Tableau du kit chargé. Choisissez maintenant le dossier YOUTUBE du kit (étape 03) : ' + relies + ' vidéo' + (relies > 1 ? 's' : '') + ' reliée' + (relies > 1 ? 's' : '') + ' sur 53.'
+          : 'Étape 02 : choisissez films-test.xlsx. Étape 03 : choisissez le dossier YOUTUBE du kit.', etat: '' });
+
+    if (E.demo) etapes.push({ titre: 'Démonstration', detail: 'Aucune chaîne réelle : rien n\'est envoyé à YouTube. Ce passage ne mesure pas vos vraies limites.', etat: 'done' });
+    else if (!E.chaine) etapes.push({ titre: 'Se connecter à la chaîne de test', detail: 'Étape 01 : collez l\'identifiant client et connectez-vous.', etat: '' });
+    else etapes.push($('confirme-test').checked
+      ? { titre: 'Chaîne de test confirmée', detail: 'Connecté à « ' + E.chaine.snippet.title + ' ».', etat: 'done' }
+      : { titre: 'Confirmer la chaîne de test', detail: 'Connecté à « ' + E.chaine.snippet.title + ' ». Cochez la case ci-dessous si c\'est bien votre chaîne de test.', etat: '' });
+
+    if (!dernier) etapes.push({ titre: 'Envoyer les 53 vidéos', detail: 'Étape 05 : cliquez sur « Mettre en ligne ».', etat: '' });
+    else if (dernier.arret) etapes.push({ titre: 'Envoi : blocage à la vidéo n° ' + numero(dernier.arret.num),
+      detail: enLigne.length + ' vidéo' + (enLigne.length > 1 ? 's' : '') + ' d\'essai en ligne. Raison : ' + dernier.arret.message + ' Relancez l\'envoi plus tard pour faire passer les suivantes.', etat: 'bad' });
+    else if (enLigne.length >= 53) etapes.push({ titre: 'Envoi : les 53 vidéos sont passées', detail: 'Aucune limite rencontrée' + (envois.length > 1 ? ' au dernier envoi (' + envois.length + ' envois en tout).' : '.'), etat: 'done' });
+    else etapes.push({ titre: 'Envoi incomplet', detail: enLigne.length + ' vidéo' + (enLigne.length > 1 ? 's' : '') + ' d\'essai en ligne sur 53, sans blocage général. Relancez l\'envoi pour les suivantes.', etat: enLigne.length ? '' : 'bad' });
+
+    const p = t.publication;
+    if (!p) etapes.push({ titre: 'Tester le passage en public', detail: 'Étape 06 : cochez une seule vidéo d\'essai et cliquez sur « Passer en public ».', etat: '' });
+    else if (p.resultat === 'ok') etapes.push({ titre: 'Passage en public : réussi', detail: 'La vidéo est devenue publique : votre accès Google peut publier.', etat: 'done' });
+    else etapes.push({ titre: 'Passage en public : bloqué', detail: 'YouTube a gardé la vidéo en privé : l\'accès Google est bridé tant que Google ne l\'a pas contrôlé (tutoriel, chapitre 07).', etat: 'bad' });
+
+    if (!envois.length) etapes.push({ titre: 'Nettoyer la chaîne de test', detail: 'À faire à la fin : étape 06, tout cocher, « Supprimer de YouTube ».', etat: '' });
+    else if (enLigne.length) etapes.push({ titre: 'Nettoyer la chaîne de test', detail: 'Il reste ' + enLigne.length + ' vidéo' + (enLigne.length > 1 ? 's' : '') + ' d\'essai en ligne. Étape 06 : tout cocher, puis « Supprimer de YouTube ».', etat: '' });
+    else etapes.push({ titre: 'Chaîne de test nettoyée', detail: 'Plus aucune vidéo d\'essai dans la liste.', etat: 'done' });
+
+    etapes.push(t.rapport
+      ? { titre: 'Rapport enregistré', detail: 'Dernier enregistrement le ' + JOUR.format(t.rapport) + ' à ' + HEURE.format(t.rapport) + '. Réenregistrez-le après chaque nouvelle étape.', etat: 'done' }
+      : { titre: 'Enregistrer le rapport', detail: 'Bouton ci-dessous. Le fichier reste sur votre ordinateur : c\'est à vous de le transmettre.', etat: '' });
+    return etapes;
+  }
+
+  function majTest() {
+    const liste = $('test-etapes');
+    if (!liste) return;
+    liste.textContent = '';
+    etapesTest().forEach((e, i) => liste.append(creer('li', { className: e.etat ? 'is-' + e.etat : '' }, [
+      creer('span', { className: 'mark', textContent: e.etat === 'done' ? '✓' : (e.etat === 'bad' ? '!' : String(i + 1)) }),
+      creer('strong', { textContent: e.titre }), creer('span', { className: 'detail', textContent: e.detail }),
+    ])));
+    $('chaine-test').textContent = E.demo ? '(Sans objet en démonstration.)' : (E.chaine ? 'Chaîne connectée : « ' + E.chaine.snippet.title + ' ».' : 'Aucune chaîne connectée pour le moment.');
+    $('confirme-test').disabled = !!E.demo || !E.chaine || E.enCours;
+  }
+
+  function rapportTest() {
+    const t = lireTest();
+    t.rapport = Date.now();
+    ecrireTest(t);
+    const quand = (ms) => JOUR.format(ms) + ' ' + HEURE.format(ms);
+    const lignes = ['RAPPORT DE TEST — Mise en ligne YouTube du festival', '',
+      'Version      : ' + VERSION,
+      'Date         : ' + quand(Date.now()),
+      'Mode         : ' + (E.demo ? 'DÉMONSTRATION (faux YouTube, ne mesure pas les vraies limites)' : 'réel'),
+      'Navigateur   : ' + navigator.userAgent,
+      'Chaîne       : ' + (E.chaine ? '« ' + E.chaine.snippet.title + ' »' + (E.demo ? '' : ($('confirme-test').checked ? ' (confirmée comme chaîne de test)' : ' (NON confirmée comme chaîne de test)')) : 'non connecté'),
+      'Kit de test  : ' + (E.kit ? 'reconnu, ' + E.films.length + ' lignes, ' + E.elements.filter((el) => el.film).length + ' vidéos reliées' : 'non chargé au moment du rapport'),
+      '', 'ÉTAT DES ÉTAPES'];
+    etapesTest().forEach((e, i) => lignes.push((i + 1) + '. [' + (e.etat === 'done' ? 'fait' : (e.etat === 'bad' ? 'PROBLÈME' : 'à faire')) + '] ' + e.titre + ' — ' + e.detail));
+    lignes.push('', 'ENVOIS DU KIT');
+    (t.envois || []).forEach((e, i) => lignes.push((i + 1) + '. ' + quand(e.date) + ' — ' + e.reussies + ' sur ' + e.demandees + ' en ligne en ' + duree(e.duree)
+      + (e.arret ? ' — BLOCAGE à la n° ' + numero(e.arret.num) + ' (la ' + e.arret.rang + 'e de cet envoi) : ' + [e.arret.statut, e.arret.raison, e.arret.detail].filter(Boolean).join(' · ')
+        : (e.arreteParVous ? ' — arrêté à la main' : (e.echecs ? ' — ' + e.echecs + ' échec(s) isolé(s)' : ' — aucune limite rencontrée')))
+      + ' — envoyées ce jour-là par la page : ' + e.aujourdhui));
+    if (!(t.envois || []).length) lignes.push('(aucun envoi du kit enregistré)');
+    lignes.push('', 'PASSAGE EN PUBLIC',
+      t.publication ? quand(t.publication.date) + ' — ' + t.publication.publiees + ' devenue(s) publique(s), ' + t.publication.restees + ' restée(s) en privé — ' + (t.publication.resultat === 'ok' ? 'l\'accès peut publier' : 'ACCÈS BRIDÉ : YouTube garde les vidéos en privé') : '(non testé)',
+      '', 'VIDÉOS D\'ESSAI ENCORE EN LIGNE D\'APRÈS LA PAGE : ' + essaisEnLigne().length,
+      'ENVOYÉES AUJOURD\'HUI PAR LA PAGE (jour du quota) : ' + envoyeesAujourdhui(),
+      '', 'JOURNAL COMPLET');
+    memoire.lire(prefixe() + 'journal', []).forEach((e) => lignes.push(quand(e.t) + '  ' + e.m));
+    enregistrer('rapport-de-test.txt', '\uFEFF' + lignes.join('\r\n') + '\r\n', 'text/plain;charset=utf-8');
+    journal('Rapport de test enregistré.');
+    majTest();
   }
 
   function rapport() {
@@ -961,6 +1073,10 @@
   $('btn-supprimer').onclick = supprimer;
   $('btn-rapport').onclick = rapport;
   $('btn-journal').onclick = enregistrerJournal;
+  $('btn-rapport-test').onclick = rapportTest;
+  $('confirme-test').onchange = () => { if ($('confirme-test').checked && E.chaine) journal('Chaîne « ' + E.chaine.snippet.title + ' » confirmée comme chaîne de test.'); majBoutons(); };
+  $('btn-raz-test').onclick = () => { if (confirm('Effacer le suivi du test (envois, passage en public, rapport) ? Les vidéos déjà en ligne et le journal ne sont pas touchés.')) { ecrireTest({}); majBoutons(); } };
+  $('version').textContent = VERSION;
   $('btn-vider-journal').onclick = () => { if (confirm('Vider le journal ?')) { memoire.ecrire(prefixe() + 'journal', []); afficherJournal(); } };
 
   const depot = $('depot');

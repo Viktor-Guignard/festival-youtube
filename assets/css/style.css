@@ -142,6 +142,31 @@ textarea:focus-visible, summary:focus-visible, .btn:focus-visible {
 .hero-facts li { border-top: 2px solid var(--color-black); padding-top: 0.8rem; font-size: 0.95rem; color: var(--color-gray-600); }
 .hero-facts strong { display: block; font-family: var(--font-heading); font-size: 1.02rem; color: var(--color-black); margin-bottom: 0.15rem; }
 
+/* ---- Version bêta : encadré du test des 53 vidéos ---- */
+.badge-beta { display: inline-block; font-family: var(--font-heading); font-weight: 700; font-size: 0.68rem; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--color-white); background: var(--color-red); padding: 0.2rem 0.55rem; border-radius: 4px; }
+.beta { background: var(--color-black); color: var(--color-white); border-radius: var(--radius-lg); padding: var(--space-lg); margin-bottom: var(--space-md); }
+.beta-head { max-width: 70ch; margin-bottom: var(--space-md); }
+.beta-head h2 { font-size: clamp(1.5rem, 3vw, 2rem); margin: 0.7rem 0 0.6rem; }
+.beta-head p { color: var(--color-gray-200); }
+.checklist { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 0.75rem; }
+.checklist li { display: grid; grid-template-columns: 2rem 1fr; gap: 0.2rem 0.75rem; align-items: start; background: #2A2627; border: 1px solid #3A3536;
+  border-radius: var(--radius-md); padding: 0.9rem 1rem; }
+.checklist .mark { grid-row: span 2; width: 2rem; height: 2rem; border-radius: 50%; display: grid; place-items: center; font-family: var(--font-heading);
+  font-weight: 700; font-size: 0.9rem; background: transparent; border: 2px solid #6A6465; color: var(--color-gray-200); }
+.checklist li.is-done .mark { background: #2F9E5C; border-color: #2F9E5C; color: var(--color-white); }
+.checklist li.is-bad .mark { background: var(--color-red); border-color: var(--color-red); color: var(--color-white); }
+.checklist strong { font-family: var(--font-heading); font-size: 1rem; }
+.checklist span.detail { font-size: 0.88rem; color: var(--color-gray-200); }
+.confirm { display: flex; gap: 0.7rem; align-items: flex-start; margin-top: var(--space-md); font-weight: 400; font-size: 0.95rem; cursor: pointer; }
+.confirm input { margin-top: 0.2rem; flex: none; }
+.confirm .hint { color: var(--color-gray-200); }
+.beta .btn-outline { border-color: var(--color-white); color: var(--color-white); }
+.beta .btn-outline:hover:not(:disabled) { background: var(--color-white); color: var(--color-black); }
+.beta .btn-dark { background: var(--color-white); color: var(--color-black); }
+.beta .btn-dark:hover:not(:disabled) { background: var(--color-gray-100); }
+.logo-slot .badge-beta { align-self: flex-start; margin-top: 0.35rem; }
+
 /* ---- Étapes (cartes) ---- */
 .steps { display: grid; gap: var(--space-md); padding-bottom: var(--space-2xl); }
 .step { position: relative; background: var(--color-white); border: 1px solid var(--color-gray-200);
@@ -307,6 +332,8 @@ figcaption { font-size: 0.86rem; color: var(--color-muted); margin-top: 0.5rem; 
   .nav-links { gap: var(--space-sm); }
   .hero { padding-top: var(--space-lg); }
   .step { padding: var(--space-md); border-radius: var(--radius-md); }
+  .beta { padding: var(--space-md); border-radius: var(--radius-md); }
+  .checklist { grid-template-columns: 1fr; }
   .step::before { font-size: 4.5rem; }
   .btn { width: 100%; }
   .actions .note { flex-basis: 100%; }

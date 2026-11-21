@@ -17,6 +17,7 @@
   <div class="header-inner">
     <a href="index.html" class="logo-slot" aria-label="Mise en ligne YouTube — accueil">
       <span class="wordmark">Mise en ligne<span class="wordmark-dot" aria-hidden="true"></span><small>YouTube · festival</small></span>
+      <span class="badge-beta" title="Version en cours de test">Bêta</span>
     </a>
     <nav class="main-nav" aria-label="Navigation principale">
       <ul class="nav-links">
@@ -48,7 +49,7 @@
 <main id="outil">
   <div class="container">
     <section class="hero">
-      <span class="eyebrow">Festival · mise en ligne</span>
+      <span class="eyebrow">Version bêta · en cours de test</span>
       <h1>Vos vidéos sur YouTube, <span class="accent">sans les ressaisir.</span></h1>
       <p class="lead">Choisissez le tableau des films et les vidéos de votre ordinateur. La page relie chaque vidéo à sa ligne, vous montre le résultat, puis met tout en ligne sur votre chaîne avec le bon titre et la bonne description.</p>
       <ul class="hero-facts">
@@ -56,6 +57,25 @@
         <li><strong>Privé par défaut</strong>Vous regardez les vidéos, puis vous les publiez vous-même.</li>
         <li><strong>Jamais en double</strong>Une coupure ? L'envoi reprend où il s'était arrêté.</li>
       </ul>
+    </section>
+
+    <section class="beta" id="s-test" aria-labelledby="titre-test">
+      <div class="beta-head">
+        <span class="badge-beta">Bêta</span>
+        <h2 id="titre-test">Test des 53 vidéos</h2>
+        <p>Cet encadré suit votre essai avec le kit de test, étape par étape. Il se met à jour tout seul. À la fin, enregistrez le rapport : il résume ce qui est passé, ce qui a bloqué et pourquoi.</p>
+      </div>
+      <ol class="checklist" id="test-etapes"></ol>
+      <label class="confirm" for="confirme-test">
+        <input type="checkbox" id="confirme-test">
+        <span>Je confirme que la chaîne connectée est ma <strong>chaîne de test</strong>, et non celle du festival. <span class="hint" id="chaine-test"></span></span>
+      </label>
+      <div class="actions">
+        <a class="btn btn-outline btn-small" href="kit-test/kit-test-53-videos.zip" download>Télécharger le kit de test</a>
+        <button type="button" class="btn btn-dark btn-small" id="btn-rapport-test">Enregistrer le rapport de test</button>
+        <button type="button" class="btn btn-outline btn-small" id="btn-raz-test">Recommencer le test à zéro</button>
+        <a class="btn btn-outline btn-small" href="tutoriel.html#test">Mode d'emploi du test</a>
+      </div>
     </section>
 
     <div class="steps">
@@ -241,7 +261,7 @@
         </ul>
       </nav>
     </div>
-    <div class="footer-bottom">La lecture des tableaux Excel utilise la bibliothèque SheetJS (licence Apache 2.0). Polices Space Grotesk et Inter (licence SIL OFL).</div>
+    <div class="footer-bottom"><span id="version"></span> · La lecture des tableaux Excel utilise la bibliothèque SheetJS (licence Apache 2.0). Polices Space Grotesk et Inter (licence SIL OFL).</div>
   </div>
 </footer>
 

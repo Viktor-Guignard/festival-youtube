@@ -8,6 +8,7 @@ Une page web qui prend les vidéos de votre ordinateur et les met en ligne sur v
 
 ## À savoir
 
+- **C'est une version bêta.** L'encadré « Test des 53 vidéos », en haut de l'outil, guide le premier essai réel et produit un rapport de test.
 - **La page a été testée avec un faux YouTube, pas avec le vrai.** Le premier essai réel se fait avec le kit de test, sur une chaîne à part.
 - **Les vidéos peuvent rester bloquées en privé** tant que Google n'a pas contrôlé l'accès technique. Le tutoriel explique comment le vérifier avec une vidéo d'essai.
 - **Un quota quotidien limite le nombre d'envois.** Quand il est atteint, la page s'arrête, l'explique, et reprend le lendemain sans doublon.
