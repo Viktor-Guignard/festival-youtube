@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mise en ligne YouTube du festival</title>
+<style>
+  :root {
+    --fond: #f6f5f1; --carte: #ffffff; --texte: #1d1c1a; --discret: #6b6862; --trait: #dcd9d1;
+    --accent: #b3261e; --accent-texte: #ffffff; --ok: #1f7a3d; --alerte: #a15c00; --erreur: #b3261e;
+    --champ: #ffffff; --survol: #f0eee8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --fond: #171614; --carte: #211f1c; --texte: #ecebe7; --discret: #a19d95; --trait: #3a3732;
+      --accent: #f2675c; --accent-texte: #1a0f0e; --ok: #6fcf8e; --alerte: #f0b35a; --erreur: #ff8a80;
+      --champ: #171614; --survol: #2a2824;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fond); color: var(--texte);
+         font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  header, main { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
+  header { padding-top: 28px; }
+  h1 { font-size: 1.6rem; margin: 0 0 4px; }
+  header p { color: var(--discret); margin: 0 0 20px; }
+  section { background: var(--carte); border: 1px solid var(--trait); border-radius: 10px;
+            padding: 18px 20px; margin-bottom: 16px; }
+  h2 { font-size: 1.1rem; margin: 0 0 10px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  h2 .num { display: inline-grid; place-items: center; width: 1.7em; height: 1.7em; border-radius: 50%;
+            background: var(--accent); color: var(--accent-texte); font-size: .85em; flex: none; }
+  h2 .etat { font-weight: 400; font-size: .9rem; color: var(--discret); }
+  p { margin: 6px 0; }
+  .aide { color: var(--discret); font-size: .92rem; }
+  label { display: block; font-size: .9rem; color: var(--discret); margin: 10px 0 3px; }
+  input[type=text], select, textarea {
+    width: 100%; padding: 8px 10px; border: 1px solid var(--trait); border-radius: 6px;
+    background: var(--champ); color: var(--texte); font: inherit; }
+  textarea { min-height: 70px; resize: vertical; }
+  .ligne { display: flex; gap: 12px; flex-wrap: wrap; align-items: end; }
+  .ligne > div { flex: 1 1 200px; min-width: 0; }
+  button, .bouton { font: inherit; padding: 8px 14px; border-radius: 6px; border: 1px solid var(--trait);
+           background: var(--carte); color: var(--texte); cursor: pointer; display: inline-block; }
+  button:hover:not(:disabled), .bouton:hover { background: var(--survol); }
+  button.principal { background: var(--accent); color: var(--accent-texte); border-color: var(--accent); font-weight: 600; }
+  button.principal:hover:not(:disabled) { filter: brightness(1.08); background: var(--accent); }
+  button:disabled { opacity: .5; cursor: not-allowed; }
+  .boutons { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; align-items: center; }
+  input[type=file] { position: absolute; width: 1px; height: 1px; opacity: 0; }
+  .tableau { overflow-x: auto; margin-top: 12px; border: 1px solid var(--trait); border-radius: 8px; }
+  table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+  th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--trait); vertical-align: top; }
+  th { color: var(--discret); font-weight: 600; white-space: nowrap; background: var(--fond); }
+  tr:last-child td { border-bottom: 0; }
+  td.fichier { word-break: break-word; min-width: 180px; }
+  td.desc { color: var(--discret); max-width: 320px; }
+  .taille { color: var(--discret); font-size: .85em; }
+  .ok { color: var(--ok); } .alerte { color: var(--alerte); } .erreur { color: var(--erreur); }
+  .barre { height: 6px; background: var(--trait); border-radius: 3px; overflow: hidden; margin-top: 4px; min-width: 110px; }
+  .barre > i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .2s; }
+  .message { margin-top: 10px; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--trait); font-size: .93rem; }
+  .message.erreur { border-color: var(--erreur); } .message.ok { border-color: var(--ok); }
+  .message:empty { display: none; }
+  .puces { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+  .puces button { padding: 2px 8px; font-size: .82rem; }
+  details { margin-top: 10px; } summary { cursor: pointer; color: var(--discret); font-size: .92rem; }
+  #reconnexion { position: fixed; left: 0; right: 0; bottom: 0; padding: 14px 16px; background: var(--carte);
+                 border-top: 2px solid var(--accent); display: none; gap: 12px; align-items: center;
+                 justify-content: center; flex-wrap: wrap; z-index: 10; }
+  #reconnexion.visible { display: flex; }
+  footer { max-width: 1100px; margin: 0 auto; padding: 4px 16px 60px; color: var(--discret); font-size: .85rem; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Mise en ligne YouTube du festival</h1>
+  <p>Choisissez le tableau des films et les vidéos de votre ordinateur : la page les met en ligne sur votre chaîne avec le bon titre et la bonne description. Tout se passe dans votre navigateur, rien n'est envoyé ailleurs que chez YouTube.</p>
+</header>
+
+<main>
+  <section id="s-connexion">
+    <h2><span class="num">1</span> Connexion à la chaîne <span class="etat" id="etat-connexion">non connecté</span></h2>
+    <label for="client-id">Identifiant client Google (créé une fois, voir le mode d'emploi)</label>
+    <input type="text" id="client-id" placeholder="xxxxxxxx.apps.googleusercontent.com" autocomplete="off" spellcheck="false">
+    <div class="boutons">
+      <button class="principal" id="btn-connexion">Se connecter à YouTube</button>
+    </div>
+    <div class="message" id="msg-connexion"></div>
+  </section>
+
+  <section id="s-tableau">
+    <h2><span class="num">2</span> Tableau des films <span class="etat" id="etat-tableau">aucun tableau</span></h2>
+    <p class="aide">Fichier Excel (.xlsx) ou .csv, une ligne par film. C'est le même tableau que pour le téléchargement : la 1<sup>re</sup> ligne de film porte le numéro 001, la suivante 002, etc.</p>
+    <div class="boutons">
+      <label class="bouton" for="choix-tableau" style="margin:0;color:var(--texte)">Choisir le tableau…</label>
+      <input type="file" id="choix-tableau" accept=".xlsx,.xlsm,.csv">
+    </div>
+    <div id="colonnes" hidden>
+      <div class="ligne">
+        <div><label for="col-titre">Colonne du titre YouTube</label><select id="col-titre"></select></div>
+        <div><label for="col-desc">Colonne de la description</label><select id="col-desc"></select></div>
+        <div><label for="col-tags">Colonne des mots-clés (facultatif)</label><select id="col-tags"></select></div>
+      </div>
+      <details>
+        <summary>Composer le titre et la description à partir de plusieurs colonnes</summary>
+        <p class="aide">Écrivez le texte voulu et placez le nom d'une colonne entre accolades là où sa valeur doit apparaître. Exemple : <code>{Titre} – un film de {Réalisateur}</code></p>
+        <label for="modele-titre">Modèle du titre</label>
+        <input type="text" id="modele-titre">
+        <label for="modele-desc">Modèle de la description</label>
+        <textarea id="modele-desc"></textarea>
+        <div class="puces" id="puces"></div>
+      </details>
+    </div>
+    <div class="message" id="msg-tableau"></div>
+  </section>
+
+  <section id="s-videos">
+    <h2><span class="num">3</span> Vidéos à mettre en ligne <span class="etat" id="etat-videos">aucune vidéo</span></h2>
+    <p class="aide">Choisissez le dossier <strong>YOUTUBE</strong> créé par le téléchargement : la page y trouve toutes les vidéos, y compris dans les sous-dossiers. Chaque vidéo est reliée à sa ligne du tableau grâce au numéro au début de son nom (« 007 - … »).</p>
+    <div class="boutons">
+      <label class="bouton" for="choix-dossier" style="margin:0;color:var(--texte)">Choisir un dossier…</label>
+      <input type="file" id="choix-dossier" webkitdirectory multiple>
+      <label class="bouton" for="choix-fichiers" style="margin:0;color:var(--texte)">Choisir des fichiers…</label>
+      <input type="file" id="choix-fichiers" multiple accept="video/*,.mkv,.mxf">
+      <button id="btn-vider" hidden>Vider la liste</button>
+    </div>
+  </section>
+
+  <section id="s-reglages">
+    <h2><span class="num">4</span> Réglages</h2>
+    <div class="ligne">
+      <div><label for="visibilite">Visibilité à la mise en ligne</label>
+        <select id="visibilite">
+          <option value="private" selected>Privée (recommandé : vous publiez après vérification)</option>
+          <option value="unlisted">Non répertoriée</option>
+          <option value="public">Publique</option>
+        </select></div>
+      <div><label for="playlist">Ajouter à la playlist</label>
+        <select id="playlist"><option value="">— aucune —</option></select></div>
+      <div><label for="categorie">Catégorie</label>
+        <select id="categorie">
+          <option value="1" selected>Films et animations</option>
+          <option value="10">Musique</option>
+          <option value="24">Divertissement</option>
+          <option value="22">People et blogs</option>
+          <option value="27">Éducation</option>
+          <option value="29">Associations et militantisme</option>
+        </select></div>
+      <div><label for="enfants">Contenu conçu pour les enfants</label>
+        <select id="enfants"><option value="non" selected>Non</option><option value="oui">Oui</option></select></div>
+    </div>
+  </section>
+
+  <section id="s-apercu">
+    <h2><span class="num">5</span> Aperçu et mise en ligne <span class="etat" id="etat-apercu"></span></h2>
+    <p class="aide" id="aide-apercu">Chargez le tableau et les vidéos : l'aperçu montre quelle ligne du tableau va sur quelle vidéo. Rien n'est mis en ligne avant que vous cliquiez sur le bouton.</p>
+    <div class="tableau" id="zone-apercu" hidden>
+      <table>
+        <thead><tr><th><input type="checkbox" id="tout-cocher" title="Tout cocher"></th><th>N°</th><th>Fichier</th><th>Titre YouTube</th><th>Description</th><th>État</th></tr></thead>
+        <tbody id="lignes-apercu"></tbody>
+      </table>
+    </div>
+    <div class="boutons">
+      <button class="principal" id="btn-envoyer" disabled>Mettre en ligne</button>
+      <button id="btn-arreter" hidden>Arrêter après la vidéo en cours</button>
+      <span class="aide" id="progression"></span>
+    </div>
+    <div class="message" id="msg-envoi"></div>
+  </section>
+
+  <section id="s-publication">
+    <h2><span class="num">6</span> Vidéos mises en ligne par cette page <span class="etat" id="etat-publication"></span></h2>
+    <p class="aide">Cette liste est gardée dans ce navigateur, sur cet ordinateur. Regardez les vidéos sur YouTube, puis cochez celles à rendre publiques.</p>
+    <div class="tableau" id="zone-publication" hidden>
+      <table>
+        <thead><tr><th><input type="checkbox" id="tout-cocher-pub" title="Tout cocher"></th><th>Titre</th><th>Lien</th><th>Visibilité</th><th>Mise en ligne</th></tr></thead>
+        <tbody id="lignes-publication"></tbody>
+      </table>
+    </div>
+    <div class="boutons">
+      <button id="btn-actualiser" disabled>Actualiser l'état</button>
+      <button class="principal" id="btn-publier" disabled>Passer en public les vidéos cochées</button>
+      <button id="btn-rapport" disabled>Exporter la liste (CSV)</button>
+    </div>
+    <div class="message" id="msg-publication"></div>
+  </section>
+</main>
+
+<footer>Page statique : aucune donnée n'est stockée sur un serveur. La lecture des tableaux Excel utilise la bibliothèque SheetJS (licence Apache 2.0, dossier <code>vendor</code>).</footer>
+
+<div id="reconnexion">
+  <span>La connexion à Google a expiré. La mise en ligne reprendra où elle s'est arrêtée.</span>
+  <button class="principal" id="btn-reconnexion">Se reconnecter et continuer</button>
+</div>
+
+<script src="vendor/xlsx.full.min.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="app.js"></script>
+</body>
+</html>
