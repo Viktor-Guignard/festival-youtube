@@ -5,7 +5,7 @@
   const API = 'https://www.googleapis.com/youtube/v3/';
   const ENVOI = 'https://www.googleapis.com/upload/youtube/v3/videos';
   const PORTEE = 'https://www.googleapis.com/auth/youtube.upload https://www.googleapis.com/auth/youtube.force-ssl';
-  const VERSION = 'Version bêta 2 du 21 novembre 2026';
+  const VERSION = 'Version bêta 3 du 22 novembre 2026';
   const EXT_VIDEO = ['.mp4', '.mov', '.m4v', '.mkv', '.avi', '.webm', '.mxf', '.mpg', '.mpeg'];
   // Taille d'un morceau envoyé : doit être un multiple de 256 Ko.
   const REGLAGES = window.FYP_REGLAGES = Object.assign({ morceau: 16 * 1024 * 1024, attente: 2000 }, window.FYP_REGLAGES);
@@ -437,7 +437,7 @@
 
   // ------------------------------------------------------------------- aperçu
   const ESSAI = /^ESSAI \d+/;
-  // Avec le kit de test, l'envoi attend que la chaîne de test soit confirmée dans l'encadré bêta.
+  // Avec le kit de test, l'envoi attend que la chaîne visée soit confirmée dans l'encadré bêta.
   const attenteConfirmation = () => E.kit && !E.demo && !$('confirme-test').checked;
   function construire() {
     if (E.enCours) return;
@@ -535,7 +535,7 @@
     $('tout-cocher').disabled = E.enCours || !cochables.length;
     if (!E.enCours) {
       $('progression').textContent = !coches.length ? '' : (!E.chaine ? 'Connectez-vous à YouTube (étape 01) pour activer le bouton.'
-        : (attenteConfirmation() ? 'Kit de test reconnu : confirmez d\'abord, dans l\'encadré noir en haut de page, que la chaîne connectée est votre chaîne de test.' : ''));
+        : (attenteConfirmation() ? 'Kit de test reconnu : confirmez d\'abord, dans l\'encadré noir en haut de page, que vous voulez bien envoyer les vidéos d\'essai sur la chaîne connectée.' : ''));
     }
     majTest();
 
@@ -958,10 +958,10 @@
           : 'Étape 02 : choisissez films-test.xlsx. Étape 03 : choisissez le dossier YOUTUBE du kit.', etat: '' });
 
     if (E.demo) etapes.push({ titre: 'Démonstration', detail: 'Aucune chaîne réelle : rien n\'est envoyé à YouTube. Ce passage ne mesure pas vos vraies limites.', etat: 'done' });
-    else if (!E.chaine) etapes.push({ titre: 'Se connecter à la chaîne de test', detail: 'Étape 01 : collez l\'identifiant client et connectez-vous.', etat: '' });
+    else if (!E.chaine) etapes.push({ titre: 'Se connecter à la chaîne', detail: 'Étape 01 : collez l\'identifiant client et connectez-vous.', etat: '' });
     else etapes.push($('confirme-test').checked
-      ? { titre: 'Chaîne de test confirmée', detail: 'Connecté à « ' + E.chaine.snippet.title + ' ».', etat: 'done' }
-      : { titre: 'Confirmer la chaîne de test', detail: 'Connecté à « ' + E.chaine.snippet.title + ' ». Cochez la case ci-dessous si c\'est bien votre chaîne de test.', etat: '' });
+      ? { titre: 'Chaîne confirmée', detail: 'Les vidéos d\'essai iront sur « ' + E.chaine.snippet.title + ' ».', etat: 'done' }
+      : { titre: 'Confirmer la chaîne', detail: 'Connecté à « ' + E.chaine.snippet.title + ' ». Cochez la case ci-dessous si c\'est bien la chaîne où envoyer les vidéos d\'essai.', etat: '' });
 
     if (!dernier) etapes.push({ titre: 'Envoyer les 53 vidéos', detail: 'Étape 05 : cliquez sur « Mettre en ligne ».', etat: '' });
     else if (dernier.arret) etapes.push({ titre: 'Envoi : blocage à la vidéo n° ' + numero(dernier.arret.num),
@@ -974,9 +974,9 @@
     else if (p.resultat === 'ok') etapes.push({ titre: 'Passage en public : réussi', detail: 'La vidéo est devenue publique : votre accès Google peut publier.', etat: 'done' });
     else etapes.push({ titre: 'Passage en public : bloqué', detail: 'YouTube a gardé la vidéo en privé : l\'accès Google est bridé tant que Google ne l\'a pas contrôlé (tutoriel, chapitre 07).', etat: 'bad' });
 
-    if (!envois.length) etapes.push({ titre: 'Nettoyer la chaîne de test', detail: 'À faire à la fin : étape 06, tout cocher, « Supprimer de YouTube ».', etat: '' });
-    else if (enLigne.length) etapes.push({ titre: 'Nettoyer la chaîne de test', detail: 'Il reste ' + enLigne.length + ' vidéo' + (enLigne.length > 1 ? 's' : '') + ' d\'essai en ligne. Étape 06 : tout cocher, puis « Supprimer de YouTube ».', etat: '' });
-    else etapes.push({ titre: 'Chaîne de test nettoyée', detail: 'Plus aucune vidéo d\'essai dans la liste.', etat: 'done' });
+    if (!envois.length) etapes.push({ titre: 'Supprimer les vidéos d\'essai', detail: 'À faire à la fin : étape 06, tout cocher, « Supprimer de YouTube ».', etat: '' });
+    else if (enLigne.length) etapes.push({ titre: 'Supprimer les vidéos d\'essai', detail: 'Il reste ' + enLigne.length + ' vidéo' + (enLigne.length > 1 ? 's' : '') + ' d\'essai en ligne. Étape 06 : tout cocher, puis « Supprimer de YouTube ».', etat: '' });
+    else etapes.push({ titre: 'Vidéos d\'essai supprimées', detail: 'Plus aucune vidéo d\'essai dans la liste.', etat: 'done' });
 
     etapes.push(t.rapport
       ? { titre: 'Rapport enregistré', detail: 'Dernier enregistrement le ' + JOUR.format(t.rapport) + ' à ' + HEURE.format(t.rapport) + '. Réenregistrez-le après chaque nouvelle étape.', etat: 'done' }
@@ -1006,7 +1006,7 @@
       'Date         : ' + quand(Date.now()),
       'Mode         : ' + (E.demo ? 'DÉMONSTRATION (faux YouTube, ne mesure pas les vraies limites)' : 'réel'),
       'Navigateur   : ' + navigator.userAgent,
-      'Chaîne       : ' + (E.chaine ? '« ' + E.chaine.snippet.title + ' »' + (E.demo ? '' : ($('confirme-test').checked ? ' (confirmée comme chaîne de test)' : ' (NON confirmée comme chaîne de test)')) : 'non connecté'),
+      'Chaîne       : ' + (E.chaine ? '« ' + E.chaine.snippet.title + ' »' + (E.demo ? '' : ($('confirme-test').checked ? ' (envoi des vidéos d\'essai confirmé sur cette chaîne)' : ' (envoi des vidéos d\'essai non confirmé)')) : 'non connecté'),
       'Kit de test  : ' + (E.kit ? 'reconnu, ' + E.films.length + ' lignes, ' + E.elements.filter((el) => el.film).length + ' vidéos reliées' : 'non chargé au moment du rapport'),
       '', 'ÉTAT DES ÉTAPES'];
     etapesTest().forEach((e, i) => lignes.push((i + 1) + '. [' + (e.etat === 'done' ? 'fait' : (e.etat === 'bad' ? 'PROBLÈME' : 'à faire')) + '] ' + e.titre + ' — ' + e.detail));
@@ -1074,7 +1074,7 @@
   $('btn-rapport').onclick = rapport;
   $('btn-journal').onclick = enregistrerJournal;
   $('btn-rapport-test').onclick = rapportTest;
-  $('confirme-test').onchange = () => { if ($('confirme-test').checked && E.chaine) journal('Chaîne « ' + E.chaine.snippet.title + ' » confirmée comme chaîne de test.'); majBoutons(); };
+  $('confirme-test').onchange = () => { if ($('confirme-test').checked && E.chaine) journal('Envoi des vidéos d\'essai confirmé sur la chaîne « ' + E.chaine.snippet.title + ' ».'); majBoutons(); };
   $('btn-raz-test').onclick = () => { if (confirm('Effacer le suivi du test (envois, passage en public, rapport) ? Les vidéos déjà en ligne et le journal ne sont pas touchés.')) { ecrireTest({}); majBoutons(); } };
   $('version').textContent = VERSION;
   $('btn-vider-journal').onclick = () => { if (confirm('Vider le journal ?')) { memoire.ecrire(prefixe() + 'journal', []); afficherJournal(); } };
